@@ -1,0 +1,75 @@
+apNOTA IMPORTANTE: baja y Quema una imagen del sistema operativo
+Raspberry Pi OS Lite
+
+Raspberry Pi OS (Legacy) Lite
+
+    Release date: October 22nd 2024
+    System: 32-bit
+    Kernel version: 6.1
+    Debian version: 11 (bullseye)
+https://downloads.raspberrypi.com/raspios_oldstable_lite_armhf/images/raspios_oldstable_lite_armhf-2024-10-28/2024-10-22-raspios-bullseye-armhf-lite.img.xz
+
+con RPI_IMAGE no olvides de poner tu contrasena y tu red wifi...no cambies el usuario deja Raspberry
+
+para encontrar la ip de tu raspi:
+arp-scan -l
+conectate a ella con ssh raspberry@ "la ip de la raspi" 
+ejemplo:
+ssh raspberry@192.168.1.143
+
+ 
+
+
+# Kozmo_cerve
+
+Setup Raspberry pi zero 2w:
+Preparar Rasberry pi zero 2w:
+
+Raspberry Pi OS Lite (Legacy) bull eye
+
+    Release date: November 19th 2024
+    System: 64-bit
+    Kernel version: 6.6
+
+
+
+apt-get update
+sudo apt install libtiff5-dev libopenjp2-7 python3-cffi portaudio19-dev python3-pip
+
+
+sudo raspi-config
+
+    enable camera, i2c, spi, and disable serial.
+
+enable i2s amp(speaker)
+activar i2s amplificador y altavoz
+
+	sudo apt install -y wget
+	pip3 install adafruit-python-shell
+	wget https://github.com/adafruit/Raspberry-Pi-Installer-Scripts/raw/main/i2samp.py
+	sudo -E env PATH=$PATH python3 i2samp.py
+ 
+	## say 'N' to playback service.
+
+enable microphone 
+activar micro
+
+	sudo nano /boo/firmware/config.txt
+
+	## add "dtoverlay=googlevoicehat-soundcard" over "max98357a" 
+	example:
+		 "[all]
+		  enable_uart=0
+		  dtoverlay=googlevoicehat-soundcard
+	          dtoverlay=max98357a"
+
+	sudo reboot
+
+	## test max98357a
+	speaker-test -c2
+	speaker-test -c2 --test=wav -w /usr/share/sounds/alsa/Front_Center.wav
+
+	## test micro
+	arecord -l
+	arecord -D plughw:0 -c1 -r 48000 -f S32_LE -t wav -V mono -v file.wav
+        		
