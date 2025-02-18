@@ -66,11 +66,11 @@
             </form>
         </div>
         <div class="speed-controls">
-            <form action="/speed" method="post">
+            <form action="/start-gif" method="post">
 			
  		<label for="lala">Choose emotion:</label>
 		<select name="emotion" id="emotion">
-		<option value="normal">normal</option>
+		<option value="'./animacion/normal.gif'">normal</option>
 		<option value="furius">furius</option>
 		<option value="happy">happy</option>
 		<option value="sad">sad</option>
@@ -91,6 +91,15 @@
 <button type="submit" name="servo" value="mediun" style="grid-area: left;">arm center</button>
 <button type="submit" name="servo" value="low" style="grid-area: right;">arm low</button>
 	</form>
+ <h1>Controlar Display de GIF</h1>
+    <form action="{{ url_for('start_gif') }}" method="post">
+        <label for="gif_path">Ruta del GIF:</label>
+        <input type="text" id="gif_path" name="gif_path" required>
+        <button type="submit">Iniciar GIF</button>
+    </form>
+    <form action="{{ url_for('stop_gif') }}" method="post">
+        <button type="submit">Detener GIF</button>
+    </form>
         </div>
     </div>
 </body>

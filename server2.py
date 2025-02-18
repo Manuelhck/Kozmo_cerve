@@ -1,13 +1,15 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 from time  import sleep
 from gpiozero import Servo
 from PIL import Image
+from gif_display import GifDisplay
 
 app = Flask(__name__)
 
 # Note the following are only used with SPI:
 
-SPI_DEVICE = 0x30
+gif_display = GifDisplay()
+
 #servokit
 servoI = Servo(12)
 servoD = Servo(13)
@@ -37,7 +39,7 @@ def move():
     print (direction)
     print (velocidad)
     if velocidad =='slow':
-        speed=0.5
+        speed=0.4
     elif direction == 'mediun':
         speed=1
     elif direction == 'fast':
@@ -48,10 +50,10 @@ def move():
         print("go go GO!")
     elif direction == 'left':
         print("hacia la izquierda!")
-        robot.right(speed)
+        robot.left(speed)
     elif direction == 'right':
         print("hacia la derecha!")
-        robot.left(speed)
+        robot.right(speed)
     elif direction == 'down':
         print("Patras!!")
         robot.backward(speed)
@@ -95,6 +97,24 @@ def arms():
         servoD.value =None;
 
         
+    # Aquí puedes añadir la lógica para mover el robot en la dirección indicada
+    return redirect(url_for('index'))
+
+@app.route('/start-gif', methods=['POST'])
+def start_gif():
+    gif_path = request.form.get('gif_path')
+    if gif_path:
+        gif_display.start(gif_path)
+        return redirect(url_for('index'))
+    else:
+        return "No gif_path provided", 400
+
+@app.route('/stop-gif', methods=['POST'])
+def stop_gif():
+    gif_display.stop()
+    return redirect(url_for('index'))
+
+
     # Aquí puedes añadir la lógica para mover el robot en la dirección indicada
     return redirect(url_for('index'))
 

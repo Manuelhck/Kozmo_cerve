@@ -1,4 +1,8 @@
+<<<<<<< Updated upstream
 apNOTA IMPORTANTE: baja y Quema una imagen del sistema operativo
+=======
+NOTA IMPORTANTE: baja y Quema una imagen del sistema operativo
+>>>>>>> Stashed changes
 
 Raspberry Pi OS Lite
 
@@ -57,7 +61,15 @@ sudo apt install -y python3-setuptools
 sudo apt install -y python3-rpi.gpio
 sudo apt install -y python3-venv
 sudo apt install -y git
+<<<<<<< Updated upstream
 apt install gcc-arm-linux-gnueabihf
+=======
+sudo apt-get install portaudio19-dev
+sudo apt install build-essential libfreetype6-dev libjpeg-dev libopenjp2-7-dev libtiff5-dev
+sudo apt-get install python3 python3-pip python3-pil libjpeg-dev zlib1g-dev libfreetype6-dev liblcms2-dev libopenjp2-7 libtiff5 flac -y
+
+
+>>>>>>> Stashed changes
 
 
 
@@ -69,7 +81,12 @@ python3 -m pip install pyproject.toml
 python3 -m pip install --upgrade luma.oled
 sudo apt install build-essential libfreetype6-dev libjpeg-dev libopenjp2-7-dev libtiff5-dev
 sudo apt-get install python3 python3-pip python3-pil libjpeg-dev zlib1g-dev libfreetype6-dev liblcms2-dev libopenjp2-7 libtiff5 -y
+<<<<<<< Updated upstream
 
 python3 -m pip install lgpio gpiozero flask
+=======
+python3 -m pip install lgpio gpiozero flask speechrecognition pyaudio
+
+>>>>>>> Stashed changes
 
 

@@ -1,52 +1,69 @@
+import time
+from luma.core.interface.serial import i2c
+from luma.oled.device import ssd1306  # Importar correctamente ssd1306
+from PIL import Image
 import speech_recognition as sr
-from gpiozero import AngularServo
+from gpiozero import AngularServo, Servo
 from time import sleep
-#from os import system
+from gpiozero import Robot
 import pygame
+pygame.init()
+robot = Robot((23, 24), (27, 17))
+serial = i2c(port=1, address=0x3C)  # Ajusta el puerto y la dirección I2C según tu configuración
+device = ssd1306(serial, width=128, height=64)
+gif_path = "./animacion/normal.gif"  # Cambia esto por la ruta de tu archivo GIF
+gif = Image.open(gif_path)
 
-# Inicializa el reconocimiento de voz
-reconocedor = sr.Recognizer()
 
-# Inicializa pygame para reproducir sonidos
-pygame.mixer.init()
+# Configuración del servo
+SERVOC_PIN = 9  # Pin GPIO donde está conectado el servo
+servoCabeza = AngularServo(SERVOC_PIN, min_angle= -120, max_angle=120)  # Configura el servo
+servoI = Servo(12)
+servoD = Servo(13)
+servoI.min()
+servoD.max()
+sleep(2)
+servoI.value =None;
+servoD.value =None;
 
-# Inicializa el servo en el pin GPIO 17 (ajusta el número de pin según tu configuración)
-servo = AngularServo(9, min_angle=-120, max_angle=120)
+# Ruta al archivo de sonido
+SONIDO_WAV =pygame.mixer.Sound("./sound/aten.wav")  # Camba esto por la ruta de tu archivo .wav
 
-def escuchar_palabras_clave():
-    # Usa el micrófono como fuente de audio
-    with sr.Microphone() as fuente:
-        print("Ajustando al ruido ambiental, un momento...")
-        reconocedor.adjust_for_ambient_noise(fuente)
-        print("Listo, puedes hablar...")
-        audio = reconocedor.listen(fuente)
+# Crear un reconocedor de voz
+recognizer = sr.Recognizer()
+
+# Usar el micrófono como fuente de audio
+with sr.Microphone() as source:
+    print("Di 'hola cosmo' para mover el servo y reproducir sonido...")
+    
+    # Ajustar el reconocedor al ruido ambiental
+    recognizer.adjust_for_ambient_noise(source)
+    
+    while True:
+        print("Escuchando...")
+        
+        # Escuchar la entrada de audio
+        audio = recognizer.listen(source)
 
         try:
-            texto = reconocedor.recognize_google(audio, language="es-ES")
-            print(f"Escuché: {texto}")
-            return texto
+            # Reconocer el audio usando Google Speech Recognition
+            texto = recognizer.recognize_google(audio, language="es-ES")
+            print("Has dicho: " + texto)
+            
+            # Verificar si se dijo "hola cosmo"
+            if "hola cosmo" in texto.lower():
+                print("¡Frase detectada! Moviendo el servo y reproduciendo sonido...")
+                
+                # Mover el servo a 90 grados
+                servoCabeza.angle = 120
+                SONIDO_WAV.play()  # Reproducir el sonido
+                sleep(2)  # Esperar 2 segundos
+                
+                # Volver el servo a 0 grados
+                servoCabeza.angle = 90
+        
         except sr.UnknownValueError:
-            print("No pude entender lo que dijiste")
-        except sr.RequestError:
-            print("No se pudo conectar con el servicio de reconocimiento de voz")
-
-    return ""
-
-def mover_servo():
-    pygame.mixer.music.load('./sound/aten.wav')
-    pygame.mixer.music.play()
-    servo.angle = 120
-    sleep(1)
-
-palabras_clave = {
-    "hola": mover_servo,
-    "adios": lambda: print("¡Adiós detectado!"),
-    "encender": lambda: print("¡Encender detectado!"),
-    "apagar": lambda: print("¡Apagar detectado!"),
-}
-
-while True:
-    texto_escuchado = escuchar_palabras_clave()
-    for palabra, accion in palabras_clave.items():
-        if palabra in texto_escuchado.lower():
-            accion()
+            print("No se pudo entender el audio")
+        
+        except sr.RequestError as e:
+            print(f"Error al solicitar resultados; {e}")
