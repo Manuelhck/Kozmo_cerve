@@ -1,15 +1,18 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify
+from flask import Flask, render_template, request, redirect, url_for, jsonify, send_from_directory
+import os
 from time  import sleep
-from gpiozero import Servo
+from gpiozero import Servo, AngularServo
 from PIL import Image
 from gif_display import GifDisplay
 from camera_class import CameraClass
 import time
 from audio_player import AudioPlayer
+from servocontroler import ServoController
 app = Flask(__name__)
-
+IMAGE_FOLDER = "./images"
+app.config['IMAGE_FOLDER'] = IMAGE_FOLDER
 # Note the following are only used with SPI:
-
+angulo=0
 gif_display = GifDisplay()
 camera = CameraClass()
 player = AudioPlayer()
@@ -17,6 +20,8 @@ player = AudioPlayer()
 #servokit
 servoI = Servo(12)
 servoD = Servo(13)
+servoCZ = AngularServo(9, min_angle=-120, max_angle=120)
+
 servoI.min()
 servoD.max()
 sleep(2)
@@ -31,10 +36,26 @@ robot = Robot((23, 24), (27, 17))
 @app.route('/')
 def index():
     return render_template('index.html')
+@app.route('/gallery')
+
+def gallery():
+    # List all files in the image folder
+    images = os.listdir(app.config['IMAGE_FOLDER'])
+    return render_template('gallery.html', images=images)
+
+@app.route('/images/<filename>')
+def get_image(filename):
+    return send_from_directory(app.config['IMAGE_FOLDER'], filename)
+
+@app.route('/download/<filename>')
+def download_image(filename):
+    return send_from_directory(app.config['IMAGE_FOLDER'], filename, as_attachment=True)
+
+
+
+
 
 @app.route('/move', methods=['POST'])
-
-
 def move():
        
     direction = request.form.get('direction')
@@ -81,9 +102,8 @@ def stop():
 @app.route('/arms', methods=['POST'])
 
 def arms():
-       
+    global angulo
     servo = request.form.get('servo')
-
     if servo == 'hi':
         servoI.max()
         servoD.min()
@@ -103,8 +123,37 @@ def arms():
          servoD.max()
          sleep(2)
          servoI.value =None;
-         servoD.value =None;
+         servoD.value =None; 
+    elif servo == 'HU': 
+         servoCZ.angle =120
+         
+         angulo  = 120
+         sleep(2)
+         print(angulo)
+         servoCZ.value =None
+    elif servo == 'H-':
+         
+         angulo -=30
+         print(angulo)
+         servoCZ.angle = angulo 
+         
+         sleep(2)
+         servoCZ.value =None
+    elif servo == 'HD':
+         servoCZ.angle = -60
 
+         angulo  = -60
+         sleep(2)
+         print(angulo)
+         servoCZ.value =None
+    elif servo == 'H+':
+
+         angulo +=30
+         print(angulo)
+         servoCZ.angle = angulo
+
+         sleep(2)
+         servoCZ.value =None
         
     # Aquí puedes añadir la lógica para mover el robot en la dirección indicada
     return redirect(url_for('index'))
@@ -127,6 +176,7 @@ def stop_gif():
 
     # Aquí puedes añadir la lógica para mover el robot en la dirección indicada
     return redirect(url_for('index'))
+
 @app.route('/start_stream')
 def start_stream():
     camera.start_stream()
@@ -137,10 +187,20 @@ def stop_stream():
     camera.stop_stream()
     return redirect(url_for('index'))
 
+@app.route('/instructions')
+def instructions():
+    return render_template('instructions.html')
+
+@app.route('/back_to_home')
+def back_to_home():
+    return redirect(url_for('index'))
+
+
 @app.route('/take_photo')
 def take_photo():
     filename="./animacion/foto.gif"
     filename2="./animacion/normal.gif"
+    camera.stop_stream()
     gif_display.stop()
     gif_display.start(filename)
     player = AudioPlayer()
@@ -150,6 +210,7 @@ def take_photo():
     camera.take_photo(filename)
     player.play("./sound/photo.wav")
     gif_display.start(filename2)
+    camera.start_stream()
     return redirect(url_for('index'))
 
 

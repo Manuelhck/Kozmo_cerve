@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galería de Imágenes</title>
+</head>
+<body>
+    <h1>Galería de Imágenes</h1>
+    <div>
+        {% for image in images %}
+            <div>
+                <a href="{{ url_for('download_image', filename=image) }}">
+                    <img src="{{ url_for('get_image', filename=image) }}" alt="{{ image }}" style="max-width: 200px; max-height: 200px;">
+                </a>
+                <p>{{ image }}</p>
+            </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
