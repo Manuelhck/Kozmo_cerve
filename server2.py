@@ -3,12 +3,16 @@ from time  import sleep
 from gpiozero import Servo
 from PIL import Image
 from gif_display import GifDisplay
-
+from camera_class import CameraClass
+import time
+from audio_player import AudioPlayer
 app = Flask(__name__)
 
 # Note the following are only used with SPI:
 
 gif_display = GifDisplay()
+camera = CameraClass()
+player = AudioPlayer()
 
 #servokit
 servoI = Servo(12)
@@ -84,17 +88,22 @@ def arms():
         servoI.max()
         servoD.min()
         sleep(2)
-        
-    elif servo == 'mediun':
-        servoI.mid()
-        servoD.mid()
-
-    elif servo == 'low':
-        servoI.min()
-        servoD.max()
-        sleep(2)
         servoI.value =None;
         servoD.value =None;
+        
+        
+    elif servo == 'mediun':
+         servoI.mid()
+         servoD.mid()
+         sleep(2)
+         servoI.value =None;
+         servoD.value =None;
+    elif servo == 'low':
+         servoI.min()
+         servoD.max()
+         sleep(2)
+         servoI.value =None;
+         servoD.value =None;
 
         
     # Aquí puedes añadir la lógica para mover el robot en la dirección indicada
@@ -103,6 +112,7 @@ def arms():
 @app.route('/start-gif', methods=['POST'])
 def start_gif():
     gif_path = request.form.get('gif_path')
+    print (gif_path)
     if gif_path:
         gif_display.start(gif_path)
         return redirect(url_for('index'))
@@ -116,6 +126,30 @@ def stop_gif():
 
 
     # Aquí puedes añadir la lógica para mover el robot en la dirección indicada
+    return redirect(url_for('index'))
+@app.route('/start_stream')
+def start_stream():
+    camera.start_stream()
+    return redirect(url_for('index'))
+
+@app.route('/stop_stream')
+def stop_stream():
+    camera.stop_stream()
+    return redirect(url_for('index'))
+
+@app.route('/take_photo')
+def take_photo():
+    filename="./animacion/foto.gif"
+    filename2="./animacion/normal.gif"
+    gif_display.stop()
+    gif_display.start(filename)
+    player = AudioPlayer()
+    sleep(2)
+    gif_display.stop()
+    filename = f"./images/photo_{int(time.time())}.png"
+    camera.take_photo(filename)
+    player.play("./sound/photo.wav")
+    gif_display.start(filename2)
     return redirect(url_for('index'))
 
 

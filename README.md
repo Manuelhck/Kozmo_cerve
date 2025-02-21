@@ -85,7 +85,7 @@ sudo apt-get install python3 python3-pip python3-pil libjpeg-dev zlib1g-dev libf
 
 python3 -m pip install lgpio gpiozero flask
 =======
-python3 -m pip install lgpio gpiozero flask speechrecognition pyaudio
+python3 -m pip install lgpio gpiozero flask speechrecognition pyaudio opencv-python
 
 >>>>>>> Stashed changes
 
