@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify, send_from_directory
 import os
+from gpiozero import Robot
 from time  import sleep
 from gpiozero import Servo, AngularServo
 from PIL import Image
@@ -7,7 +8,11 @@ from gif_display import GifDisplay
 from camera_class import CameraClass
 import time
 from audio_player import AudioPlayer
-from servocontroler import ServoController
+import socket 
+
+from ipoled import OLEDDisplay
+from distance_sensor_manager import DistanceSensorManager
+
 app = Flask(__name__)
 IMAGE_FOLDER = "./images"
 app.config['IMAGE_FOLDER'] = IMAGE_FOLDER
@@ -28,11 +33,29 @@ sleep(2)
 servoI.value =None;
 servoD.value =None;
 
-from gpiozero import Robot
+
 robot = Robot((23, 24), (27, 17))
 
-# Clear display.
+servoCZ.angle = None;
+#eco sensor
+echo_pin = 26
+trigger_pin = 6
+sensor_manager = DistanceSensorManager(echo_pin, trigger_pin)
+def get_server_ip():
 
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        # No necesitamos realmente conectarnos, sólo obtener la IP local
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+    except Exception:
+        ip = "No se pudo obtener la IP"
+    finally:
+        s.close()
+    return ip
+ips=get_server_ip()
+display = OLEDDisplay(font_size=22)
+display.display_text(ips)
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -189,7 +212,10 @@ def stop_stream():
 
 @app.route('/instructions')
 def instructions():
-    return render_template('instructions.html')
+    server_ip = get_server_ip()
+    return render_template('instructions.html', server_ip=server_ip)
+
+    
 
 @app.route('/back_to_home')
 def back_to_home():
@@ -212,7 +238,21 @@ def take_photo():
     gif_display.start(filename2)
     camera.start_stream()
     return redirect(url_for('index'))
+@app.route('/distance', methods=['GET'])
+
+def get_distance():
+    distance = sensor_manager.get_distance()
+    return jsonify({"distance": distance})
+
+@app.route('/cleanup', methods=['POST'])
+def cleanup():
+    sensor_manager.cleanup()
+    return jsonify({"status": "sensor cleaned up"})
 
 
 if __name__ == '__main__':
-   app.run(host='0.0.0.0', port=8000, debug=False)
+    try:
+
+        app.run(host='0.0.0.0', port=8000, debug=False)
+    finally:
+        sensor_manager.cleanup()

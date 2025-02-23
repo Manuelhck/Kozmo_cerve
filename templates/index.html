@@ -133,15 +133,24 @@
                     <button type="submit">STOP</button>
                 </form>
             </div>
+
+<div class="stop-control">
+ <h3>Sensor de Distancia</h3>
+    <button onclick="consultarDistancia()">Consultar Distancia</button>
+    <div id="result"></div>
+</div>
+
+
         </div>
         <div class="container">
             <div class="arms-control">
-<h3>Servo control</h3>
+<h3>Arms control</h3>
                 <div class="controls">
                     <form action="/arms" method="post">
                         <button type="submit" name="servo" value="hi">Arm Hi</button>
                         <button type="submit" name="servo" value="medium">Arm Center</button>
                         <button type="submit" name="servo" value="low">Arm Low</button>
+<p><h3>Head control</h3></p>
                         <button type="submit" name="servo" value="HU">Head Up</button>
                         <button type="submit" name="servo" value="H+">Head +</button>
                         <button type="submit" name="servo" value="H-">Head -</button>
@@ -162,7 +171,27 @@
                     <button type="submit">Detener GIF</button>
                 </form>
             </div>
-        </div>
+            <div class="stop-control">
+               <h3>Voice command</h3>
+                  <form action="/voz" method="post">
+                       <button type="submit" name="command" value="command">comando</button>
+                  </form>
+            </div>
     </div>
+    <script>
+        function consultarDistancia() {
+            // Hace una solicitud GET al servidor Flask
+            fetch('/distance')
+                .then(response => response.json())
+                .then(data => {
+                    // Muestra la distancia en la página
+                    document.getElementById('result').innerText = `Distancia: ${data.distance.toFixed(2)} metros`;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('result').innerText = 'Error al consultar el sensor';
+                });
+        }
+    </script>
 </body>
 </html>

@@ -43,7 +43,7 @@
 
         <h2>Instrucciones para Linux</h2>
         <p>Para reproducir el stream de video, ejecuta el siguiente comando en tu terminal:</p>
-        <pre>ffplay tcp://192.168.1.151:5001 -vf "setpts=N/30" -fflags nobuffer -flags low_delay -framedrop</pre>
+        <pre>ffplay tcp://{{ server_ip }}:5001 -vf "setpts=N/30" -fflags nobuffer -flags low_delay -framedrop</pre>
         <p>Asegúrate de tener <code>ffplay</code> instalado en tu sistema. Puedes instalarlo con:</p>
         <pre>sudo apt update && sudo apt install ffmpeg</pre>
 
@@ -55,7 +55,7 @@
           <li>Navega al directorio donde instalaste <code>ffmpeg</code>. Por ejemplo:</li>
           <pre>cd C:\\ruta\\a\\ffmpeg\\bin</pre>
           <li>Ejecuta el siguiente comando:</li>
-          <pre>ffplay tcp://192.168.1.151:5001 -vf "setpts=N/30" -fflags nobuffer -flags low_delay -framedrop</pre>
+          <pre>ffplay tcp://{{ server_ip }}:5001 -vf "setpts=N/30" -fflags nobuffer -flags low_delay -framedrop</pre>
         </ol>
         <a href="{{ url_for('back_to_home') }}" class="btn">Volver al Inicio</a>
     </div>
