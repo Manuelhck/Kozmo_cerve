@@ -193,5 +193,60 @@
                 });
         }
     </script>
+ <script>
+        let velocidad = 'medium'; // Velocidad por defecto
+
+        // Función para enviar la dirección al servidor
+        function sendDirection(direction) {
+            fetch('/move', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `direction=${direction}&velocidad=${velocidad}`,
+            });
+        }
+
+        // Función para detener el robot
+        function stopRobot() {
+            fetch('/stop', { method: 'POST' });
+        }
+
+        // Detectar teclas presionadas
+        document.addEventListener('keydown', (event) => {
+            switch (event.key) {
+                case 'ArrowUp':
+                    sendDirection('up');
+                    break;
+                case 'ArrowDown':
+                    sendDirection('down');
+                    break;
+                case 'ArrowLeft':
+                    sendDirection('left');
+                    break;
+                case 'ArrowRight':
+                    sendDirection('right');
+                    break;
+                case ' ': // Barra espaciadora para cambiar la velocidad
+                    if (velocidad === 'slow') {
+                        velocidad = 'medium';
+                    } else if (velocidad === 'medium') {
+                        velocidad = 'fast';
+                    } else {
+                        velocidad = 'slow';
+                    }
+                    console.log(`Velocidad cambiada a: ${velocidad}`);
+                    break;
+            }
+        });
+
+        // Detectar cuando se suelta una tecla
+        document.addEventListener('keyup', (event) => {
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) {
+                stopRobot();
+            }
+        });
+    </script>
+        
 </body>
 </html>
