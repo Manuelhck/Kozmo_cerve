@@ -145,19 +145,19 @@ def arms():
         if servo == 'hi':
             servoI.max()
             servoD.min()
-            sleep(0.5)
+            sleep(1)
             servoI.value = None
             servoD.value = None
         elif servo == 'medium':
             servoI.mid()
             
-            sleep(0.5)
+            sleep(1)
             servoI.value = None
             servoD.value = None
         elif servo == 'low':
             servoI.min()
             servoD.max()
-            sleep(0.5)
+            sleep(1)
             servoI.value = None
             servoD.value = None
         elif servo == 'HU':

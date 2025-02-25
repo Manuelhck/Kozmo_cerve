@@ -16,14 +16,63 @@ class CameraClass:
                 "rpicam-vid",
                 "-t", "0",          # Transmitir indefinidamente
                 "--inline",         # Habilita el modo inline (necesario para transmisión TCP)
-                "--listen",         # Escuchar en el puerto TCP
-                "--framerate", "10",  # Tasa de frames reducida a 10 FPS
+                      
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+++++++++++++                "--listen",         # Escuchar en el puerto TCP
+                "--framerate", "15",  # Tasa de frames reducida
                 "-o", "tcp://0.0.0.0:5001"  # Salida a TCP en el puerto 5001
             ]
             self.process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             self.process.communicate()  # Espera a que el proceso termine
 
-        # Inicia el comando en un hilo separado con baja prioridad
+        # Inicia el comando en un hilo separado
         self.thread = threading.Thread(target=run)
         self.thread.start()
         print("Transmisión de video iniciada en tcp://0.0.0.0:5001")
@@ -40,7 +89,7 @@ class CameraClass:
             self.thread = None
         print("Transmisión de video detenida")
 
-    def take_photo(self, filename):
+    def take_photo(self,filename):
         """
         Toma una foto y la guarda en un archivo.
         
@@ -57,7 +106,7 @@ class CameraClass:
             
         except subprocess.CalledProcessError as e:
             print(f"Error al tomar la foto: {e}")
-
+ 
     def restart_camera(self):
         """
         Reinicia la cámara para asegurarse de que esté disponible.
@@ -67,4 +116,5 @@ class CameraClass:
             subprocess.run(["sudo", "systemctl", "restart", "rpicam"], check=True)
             time.sleep(1)  # Espera un segundo para asegurarse de que la cámara esté lista
         except subprocess.CalledProcessError as e:
-            print(f"Error al reiniciar la cámara: {e}")
+            print(f"Error al reiniciar la cámara: {e}")  
+
