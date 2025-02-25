@@ -24,13 +24,10 @@ player = AudioPlayer()
 
 # servokit
 try:
-    servoI = Servo(12)
-    servoD = Servo(13)
+    servoI = AngularServo(13, min_angle=-100, max_angle=100)
+    servoD = AngularServo(12, min_angle=-100, max_angle=100)
     servoCZ = AngularServo(9, min_angle=-120, max_angle=120)
 
-    servoI.min()
-    servoD.max()
-    sleep(1)
     servoI.value = None
     servoD.value = None
 except Exception as e:
@@ -142,22 +139,22 @@ def arms():
     try:
         servo = request.form.get('servo')
 
-        if servo == 'hi':
-            servoI.max()
-            servoD.min()
-            sleep(1)
-            servoI.value = None
-            servoD.value = None
+        if servo == 'low':
+            servoI.angle = 100
+            servoD.angle = -100
+            sleep(0.7)
+            servoI.angle= None
+            servoD.angle= None
         elif servo == 'medium':
-            servoI.mid()
+            servoI.angle = 60
             
-            sleep(1)
-            servoI.value = None
-            servoD.value = None
-        elif servo == 'low':
-            servoI.min()
-            servoD.max()
-            sleep(1)
+            sleep(0.7)
+            servoI.angle= None
+            servoD.angle= None
+        elif servo == 'hi':
+            servoI.angle = -80
+            servoD.angle = 80
+            sleep(0.7)
             servoI.value = None
             servoD.value = None
         elif servo == 'HU':
