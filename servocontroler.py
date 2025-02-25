@@ -2,11 +2,11 @@ from gpiozero import AngularServo
 from time import sleep
 
 class ServoController:
-    def __init__(self, pin_servo1=17, pin_servo2=27, pin_servo3=22):
+    def __init__(self, pin_servo1=12, pin_servo2=13, pin_servo3=9):
         # Inicializa los servos con los pines especificados
-        self.servo1 = AngularServo(pin_servo1, min_angle=-90, max_angle=90)
-        self.servo2 = AngularServo(pin_servo2, min_angle=-90, max_angle=90)
-        self.servo3 = AngularServo(pin_servo3, min_angle=-90, max_angle=90)
+        self.servo1 = AngularServo(12, min_angle=-0, max_angle=100)
+        self.servo2 = AngularServo(13, min_angle=-90, max_angle=90)
+        self.servo3 = AngularServo(9, min_angle=-90, max_angle=90)
 
     def move_servo(self, servo, angle):
         """Mueve un servo a un ángulo específico."""
