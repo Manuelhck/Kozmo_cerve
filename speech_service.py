@@ -3,6 +3,7 @@ import threading
 import time
 from servocontroler import ServoController
 from time import sleep
+from clima_api import ClimaAPI
 
 class SpeechRecognitionService:
     def __init__(self):
@@ -11,8 +12,8 @@ class SpeechRecognitionService:
         self.is_listening = False
         self.commands = {
             "cosmo manos arriba": self.encender_luz,
-            "cosmo baja las manos": self.apagar_luz,
-            "abrir puerta": self.abrir_puerta,
+            "cosmo manos abajo": self.apagar_luz,
+            "cosmo dime el tiempo": self.abrir_puerta,
             "cerrar puerta": self.cerrar_puerta,
             "reproducir música": self.reproducir_musica,
             "detener música": self.detener_musica,
@@ -65,7 +66,8 @@ class SpeechRecognitionService:
     def encender_luz(self):
         print("OK")
         controller = ServoController()
-        controller.move_servo(1, 100)
+        controller.move_servo(1, 90)
+        controller.move_servo(2, -90)
         sleep(1)
         
         
@@ -75,11 +77,27 @@ class SpeechRecognitionService:
         
         print("OK")
         controller = ServoController()
-        controller.move_servo(1, 0)
-        sleep(1)
+        controller.move_servo(1, -90)
+        controller.move_servo(2, 90)
+        sleep(2)
 
     def abrir_puerta(self):
-        print("Abriendo la puerta...")
+         # Reemplaza con tu API Key de OpenWeatherMap
+        API_KEY = '24042ef8f3b98cb2da621a3d28c04661'
+        
+    
+    # Crear una instancia de la clase
+        clima = ClimaAPI(API_KEY)
+    
+    # Lista de ciudades
+        
+    
+    # Obtener y mostrar el clima de cada ciudad
+    #for ciudad in ciudades:
+        ciudad = "Albacete,ES"
+        print(f"\nClima en {ciudad}:")
+        clima.obtener_y_mostrar_clima(ciudad)
+
 
     def cerrar_puerta(self):
         print("Cerrando la puerta...")
@@ -88,7 +106,7 @@ class SpeechRecognitionService:
         print("Reproduciendo música...")
 
     def detener_musica(self):
-        print("Deteniendo la música...")
+        print("Deteniendo la música..")
 
     def contar_chiste(self):
         print("¿Por qué los programadores prefieren el modo oscuro? ¡Porque la luz atrae a los bugs!")

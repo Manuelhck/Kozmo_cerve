@@ -11,7 +11,7 @@ from audio_player import AudioPlayer
 import socket
 from ipoled import OLEDDisplay
 from distance_sensor_manager import DistanceSensorManager
-
+from speech_service import SpeechRecognitionService
 app = Flask(__name__)
 IMAGE_FOLDER = "./images"
 app.config['IMAGE_FOLDER'] = IMAGE_FOLDER
@@ -274,6 +274,33 @@ def cleanup():
     except Exception as e:
         print(f"Error cleaning up sensor: {e}")
         return jsonify({"status": "error"})
+
+@app.route('/voz', methods=['POST'])
+
+def voz():
+    try:
+        service = SpeechRecognitionService()
+        service.start_listening()
+
+        return redirect(url_for('index'))
+    except Exception as e:
+        print(f"activado reconcimiento")
+        return redirect(url_for('index'))
+
+@app.route('/stopvoz', methods=['POST'])
+
+def stopvoz():
+    try:
+        service = SpeechRecognitionService()
+        service.stop_listening()
+
+
+        return redirect(url_for('index'))
+    except Exception as e:
+
+        return redirect(url_for('index'))
+
+
 
 if __name__ == '__main__':
     try:
