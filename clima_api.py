@@ -1,3 +1,4 @@
+
 import requests
 from DualParameterDisplay import DualParameterDisplay
 class ClimaAPI:
@@ -50,7 +51,7 @@ class ClimaAPI:
         try:
             font_path = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
             display = DualParameterDisplay(font_path=font_path, font_size=20)
-            display.show_parameters( f" {datos['main']['temp']}°C" , f" {datos['main']['humidity']}%", duration=8)
+            display.show_parameters( f" {datos['main']['temp']}°C" , f" {datos['main']['humidity']}%", duration=5)
         except KeyboardInterrupt:
             display.cleanup()
 
@@ -64,14 +65,4 @@ class ClimaAPI:
         if datos_clima:
             self.mostrar_clima(datos_clima)
 
-# Ejemplo de uso
-if __name__ == "__main__":
-    # Reemplaza con tu API Key de OpenWeatherMap
-    API_KEY = '24042ef8f3b98cb2da621a3d28c04661'
-    
-    # Crear una instancia de la clase
-    clima = ClimaAPI(API_KEY)
-    
-    # Obtener y mostrar el clima de una ciudad
-    ciudad = "Albacete,ES"  # Cambia esto por la ciudad que desees
-    clima.obtener_y_mostrar_clima(ciudad)
+

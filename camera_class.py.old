@@ -14,45 +14,36 @@ class CameraClass:
         def run():
             command = [
                 "rpicam-vid",
-                "-t", "0",           # Transmitir indefinidamente
+                "-t", "0",          # Transmitir indefinidamente
                 "--inline",         # Habilita el modo inline (necesario para transmisión TCP)
                 "--listen",         # Escuchar en el puerto TCP
-                "--framerate", "15",  # Tasa de frames reducida
+                "--framerate", "10",  # Tasa de frames reducida a 10 FPS
                 "-o", "tcp://0.0.0.0:5001"  # Salida a TCP en el puerto 5001
             ]
-            try:
-                self.process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                self.process.communicate()  # Espera a que el proceso termine
-            except subprocess.SubprocessError as e:
-                print(f"Error al iniciar la transmisión de video: {e}")
+            self.process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            self.process.communicate()  # Espera a que el proceso termine
 
-        # Inicia el comando en un hilo separado
-        try:
-            self.thread = threading.Thread(target=run)
-            self.thread.start()
-            print("Transmisión de video iniciada en tcp://0.0.0.0:5001")
-        except Exception as e:
-            print(f"Error al iniciar el hilo de transmisión de video: {e}")
+        # Inicia el comando en un hilo separado con baja prioridad
+        self.thread = threading.Thread(target=run)
+        self.thread.start()
+        print("Transmisión de video iniciada en tcp://0.0.0.0:5001")
 
     def stop_stream(self):
         """
         Detiene la transmisión de video.
         """
-        try:
-            if self.process:
-                self.process.terminate()  # Termina el proceso
-                self.process = None
-            if self.thread:
-                self.thread.join()  # Espera a que el hilo termine
-                self.thread = None
-            print("Transmisión de video detenida")
-        except Exception as e:
-            print(f"Error al detener la transmisión de video: {e}")
+        if self.process:
+            self.process.terminate()  # Termina el proceso
+            self.process = None
+        if self.thread:
+            self.thread.join()  # Espera a que el hilo termine
+            self.thread = None
+        print("Transmisión de video detenida")
 
     def take_photo(self, filename):
         """
         Toma una foto y la guarda en un archivo.
-
+        
         :param filename: Nombre del archivo donde se guardará la foto (por defecto: "./images/photo.png").
         """
         command = [
@@ -63,6 +54,7 @@ class CameraClass:
         try:
             subprocess.run(command, check=True)
             print(f"Foto guardada como {filename}")
+            
         except subprocess.CalledProcessError as e:
             print(f"Error al tomar la foto: {e}")
 

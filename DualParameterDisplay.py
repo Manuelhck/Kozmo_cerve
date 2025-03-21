@@ -51,10 +51,10 @@ class DualParameterDisplay:
         # Muestra los parámetros en la pantalla
         with canvas(self.device) as draw:
             # Muestra el primer parámetro en la parte superior
-            draw.text((0, 0), f" T: {param1_str}", font=self.font, fill="white")
+            draw.text((0, 0), f"{param1_str}", font=self.font, fill="white")
             
             # Muestra el segundo parámetro en la parte inferior
-            draw.text((0, 30), f" H: {param2_str}", font=self.font, fill="white")
+            draw.text((0, 30), f"  {param2_str}", font=self.font, fill="white")
         
         # Espera el tiempo especificado
         time.sleep(duration)

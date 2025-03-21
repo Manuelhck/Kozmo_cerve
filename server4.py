@@ -7,8 +7,7 @@ from PIL import Image
 from gif_display import GifDisplay
 from camera_class import CameraClass
 import time
-from background_wav_player import BackgroundWavPlayer
-#from audio_player import AudioPlayer
+from audio_player import AudioPlayer
 import socket
 from ipoled import OLEDDisplay
 from distance_sensor_manager import DistanceSensorManager
@@ -21,21 +20,9 @@ app.config['IMAGE_FOLDER'] = IMAGE_FOLDER
 angulo = 0
 gif_display = GifDisplay()
 camera = CameraClass()
-#player = AudioPlayer()
+player = AudioPlayer()
 
 # servokit
-try:
-    servoI = AngularServo(13, min_angle=-100, max_angle=100)
-    servoD = AngularServo(12, min_angle=-100, max_angle=100)
-    servoCZ = AngularServo(9, min_angle=-120, max_angle=120)
-
-    servoI.value = None
-    servoD.value = None
-except Exception as e:
-    print(f"Error initializing servos: {e}")
-
-robot = Robot((23, 24), (27, 17))
-servoCZ.angle = None
 
 # eco sensor
 echo_pin = 26
@@ -136,25 +123,39 @@ def stop():
 
 @app.route('/arms', methods=['POST'])
 def arms():
+# servokit
+    try:
+        servoI = AngularServo(13, min_angle=-100, max_angle=100)
+        servoD = AngularServo(12, min_angle=-100, max_angle=100)
+        servoCZ = AngularServo(9, min_angle=-120, max_angle=120)
+        robot = Robot((23, 24), (27, 17))
+        servoCZ.angle = None
+        
+
+        servoI.value = None
+        servoD.value = None
+    except Exception as e:
+           print(f"Error initializing servos: {e}")
+
     global angulo
     try:
         servo = request.form.get('servo')
 
         if servo == 'low':
             servoI.angle = 100
-#            servoD.angle = -100
+           # servoD.angle = -100
             sleep(0.7)
             servoI.angle= None
-#            servoD.angle= None
+            servoD.angle= None
         elif servo == 'medium':
             servoI.angle = 60
             
             sleep(0.7)
-            servoI.angle= None
+     #       servoI.angle= None
             servoD.angle= None
         elif servo == 'hi':
-            servoI.angle = -80
-#            servoD.angle = 80
+            #servoI.angle = -80
+            servoD.angle = 80
             sleep(0.7)
             servoI.value = None
             servoD.value = None
@@ -245,12 +246,12 @@ def take_photo():
         camera.stop_stream()
         gif_display.stop()
         gif_display.start(filename)
- #       player = AudioPlayer()
- #       sleep(2)
+        player = AudioPlayer()
+        sleep(2)
         gif_display.stop()
         filename = f"./images/photo_{int(time.time())}.png"
         camera.take_photo(filename)
- #       player.play("./sound/photo.wav")
+        player.play("./sound/photo.wav")
         gif_display.start(filename2)
         camera.start_stream()
         return redirect(url_for('index'))

@@ -1,9 +1,15 @@
+import config
 import speech_recognition as sr
 import threading
 import time
 from servocontroler import ServoController
 from time import sleep
 from clima_api import ClimaAPI
+from horaydia import HoraYDia
+from gif_display import GifDisplay
+filename = "./animacion/normal.gif"
+gif_display = GifDisplay()
+gif_display.start(filename)
 
 class SpeechRecognitionService:
     def __init__(self):
@@ -14,7 +20,7 @@ class SpeechRecognitionService:
             "cosmo manos arriba": self.encender_luz,
             "cosmo manos abajo": self.apagar_luz,
             "cosmo dime el tiempo": self.abrir_puerta,
-            "cerrar puerta": self.cerrar_puerta,
+            "cosmo dime la hora": self.cerrar_puerta,
             "reproducir música": self.reproducir_musica,
             "detener música": self.detener_musica,
             "contar chiste": self.contar_chiste,
@@ -43,8 +49,11 @@ class SpeechRecognitionService:
                 print("Escuchando...")
                 try:
                     audio = self.recognizer.listen(source, timeout=5)
-                    command = self.recognizer.recognize_google(audio, language="es-ES").lower()
+                    command = self.recognizer.recognize_google(audio, language=config.Lenguage).lower()
+                   
+
                     print(f"Comando detectado: {command}")
+                   
                     self._process_command(command)
                 except sr.UnknownValueError:
                     print("No se entendió el comando")
@@ -55,6 +64,7 @@ class SpeechRecognitionService:
 
     def _process_command(self, command):
         """Procesa el comando detectado."""
+        
         for cmd, action in self.commands.items():
             if cmd in command:
                 action()
@@ -82,9 +92,10 @@ class SpeechRecognitionService:
         sleep(2)
 
     def abrir_puerta(self):
-         # Reemplaza con tu API Key de OpenWeatherMap
-        API_KEY = '24042ef8f3b98cb2da621a3d28c04661'
         
+         # Reemplaza con tu API Key de OpenWeatherMap
+        #API_KEY = '24042ef8f3b98cb2da621a3d28c04661'
+        API_KEY = config.weather_API_KEY
     
     # Crear una instancia de la clase
         clima = ClimaAPI(API_KEY)
@@ -96,11 +107,17 @@ class SpeechRecognitionService:
     #for ciudad in ciudades:
         ciudad = "Albacete,ES"
         print(f"\nClima en {ciudad}:")
+       
+        gif_display.stop()
         clima.obtener_y_mostrar_clima(ciudad)
-
+        gif_display.start(filename)
 
     def cerrar_puerta(self):
-        print("Cerrando la puerta...")
+        reloj = HoraYDia()
+#reloj.mostrar_hora_y_dia()  # Muestra la hora y el día en formato predeterminado
+        gif_display.stop()
+        reloj.mostrar_hora_y_dia("%d/%m/%Y","%H:%M:%S")  # Formato personalizado
+        gif_display.start(filename)
 
     def reproducir_musica(self):
         print("Reproduciendo música...")
